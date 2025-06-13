@@ -1,128 +1,66 @@
-# 🗃 データベース処理教材：PostgreSQL との接続と操作の基本
+# 🛠️ FastAPI アプリの実行手順
 
-この教材では、Python から PostgreSQL データベースに接続し、データの読み書きを行う方法を学びます。`psycopg2`や`SQLAlchemy`を使った実践的なコード例を交えて、基本的な SQL 操作とデータフレームへの連携を解説します。
+## ✅ 前提条件
+
+- Python 3.7 以上がインストールされていること
+- ターミナル（コマンドプロンプト / PowerShell / bash 等）が使用できること
 
 ---
 
-## ✅ ステップ ①：環境準備
-
-### 📌 必要ライブラリのインストール
+## 📦 ステップ ①：必要なパッケージをインストール
 
 ```bash
-pip install psycopg2-binary sqlalchemy pandas
-```
-
-### 📌 PostgreSQL の用意
-
-- ローカル or クラウド（例：ElephantSQL、Render など）
-- テーブル定義例：
-
-```sql
-CREATE TABLE sales (
-    id SERIAL PRIMARY KEY,
-    date DATE,
-    product TEXT,
-    amount INTEGER,
-    customer TEXT
-);
+pip install fastapi uvicorn requests
 ```
 
 ---
 
-## ✅ ステップ ②：psycopg2 で基本的な接続と操作
+## 🚀 ステップ ②：アプリを起動
 
-### 📌 データの挿入
+```bash
+uvicorn main:app --reload
+```
+
+- `--reload` をつけることでコードを変更しても自動でリロードされます（開発用）。
+
+---
+
+## 🌐 ステップ ③：ブラウザでアクセス
+
+以下の URL にアクセスできます：
+
+| URL                                                        | 概要                           |
+| ---------------------------------------------------------- | ------------------------------ |
+| [http://127.0.0.1:8000](http://127.0.0.1:8000)             | ルート：Hello FastAPI          |
+| [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)   | Swagger UI（API ドキュメント） |
+| [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc) | ReDoc（別 UI のドキュメント）  |
+
+---
+
+## 🔑 ステップ ④：外部 API の設定（任意）
+
+`/weather` エンドポイントで天気 API を使う場合は、以下の URL で API キー（無料登録可）を取得し：
+
+- [https://www.weatherapi.com/](https://www.weatherapi.com/)
+
+`main.py` の中の `YOUR_KEY` を取得した API キーに置き換えてください：
 
 ```python
-import psycopg2
-
-conn = psycopg2.connect(
-    host="localhost",
-    dbname="testdb",
-    user="postgres",
-    password="yourpassword"
-)
-cursor = conn.cursor()
-
-cursor.execute(
-    "INSERT INTO sales (date, product, amount, customer) VALUES (%s, %s, %s, %s)",
-    ("2024-06-01", "Widget", 5, "Tanaka")
-)
-
-conn.commit()
-cursor.close()
-conn.close()
-```
-
-### 📌 データの取得
-
-```python
-conn = psycopg2.connect(...)
-cursor = conn.cursor()
-
-cursor.execute("SELECT * FROM sales")
-rows = cursor.fetchall()
-for row in rows:
-    print(row)
-
-cursor.close()
-conn.close()
+url = f"https://api.weatherapi.com/v1/current.json?key=YOUR_KEY&q={city}"
 ```
 
 ---
 
-## ✅ ステップ ③：pandas との連携（SELECT 結果の DataFrame 化）
+## ✅ 動作確認の例
 
-```python
-import pandas as pd
+1. `http://127.0.0.1:8000/greet?name=太郎`
+   → `{ "message": "こんにちは 太郎 さん" }`
 
-conn = psycopg2.connect(...)
-df = pd.read_sql("SELECT * FROM sales", conn)
-print(df.head())
-conn.close()
+2. Swagger UI から `/items` に `POST`：
+
+```json
+{
+  "name": "apple",
+  "price": 120
+}
 ```
-
----
-
-## ✅ ステップ ④：SQLAlchemy による ORM 的操作（基本）
-
-```python
-from sqlalchemy import create_engine
-import pandas as pd
-
-engine = create_engine("postgresql+psycopg2://postgres:yourpassword@localhost/testdb")
-
-# データ挿入（DataFrame → DB）
-df = pd.DataFrame({
-    "date": ["2024-06-01"],
-    "product": ["Gadget"],
-    "amount": [3],
-    "customer": ["Suzuki"]
-})
-df.to_sql("sales", engine, if_exists="append", index=False)
-
-# 読み込み（DB → DataFrame）
-df2 = pd.read_sql("SELECT * FROM sales", engine)
-print(df2)
-```
-
----
-
-## ✅ ステップ ⑤：実践課題
-
-### 📁 課題 1：データの追加と一覧表示
-
-- 任意のデータを挿入 → 全件表示
-
-### 📊 課題 2：月別売上集計
-
-- SQL または pandas で集計処理
-
-### 📈 課題 3：売上金額が一定以上のデータだけを抽出・CSV 出力
-
----
-
-### 🚀 最終ゴール
-
-- Python と PostgreSQL を連携させて、データを読み書き・加工・保存できるようになること。
-- データ分析の前処理や業務自動化に役立てる。

@@ -1,1 +1,25 @@
-jupyter
+# ユーティリティ
+glob               # ディレクトリ操作
+requests           # HTTP通信
+pandas             # 表形式データ操作
+python-dotenv      # 環境変数の設定
+# DB関連
+psycopg2-binary    # Postgresクライアント
+weaviate-client    # ベクトルDBクライアント
+sqlalchemy         # 汎用RDS操作
+# 生成AI関連
+langchain          # テキスト生成AI操作
+langchain-openai   # 拡張：OpenAIサービス用
+langgraph          # 拡張：Iエージェント構築
+langchain-weaviate # 拡張：ベクトルDB連携
+# テキスト抽出・加工
+nltk               # トークン分割(主に英語)
+janome             # トークン分割(日本語)
+pymupdf            # PDF読込
+openpyxl           # Excel読書
+# 見える化・レポート
+matplotlib         # グラフ作成
+python-docx        # Word作成
+# Webサービス化
+fastapi            # APIサーバ
+uvicorn            # 開発サーバ(ホットリロード等)
