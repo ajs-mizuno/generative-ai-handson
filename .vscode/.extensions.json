@@ -1,0 +1,12 @@
+{
+    "recommendations": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.autopep8",
+        "ms-toolsai.jupyter",
+        "eamodio.gitlens",
+        "mhutchie.git-graph",
+        "ms-azuretools.vscode-docker",
+        "esbenp.prettier-vscode"
+    ]
+}
