@@ -1,5 +1,6 @@
+# PythonのNotebook
+jupyter
 # ユーティリティ
-glob               # ディレクトリ操作
 requests           # HTTP通信
 pandas             # 表形式データ操作
 python-dotenv      # 環境変数の設定
