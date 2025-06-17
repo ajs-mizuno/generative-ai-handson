@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>商品検索</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 1rem;
+      }
+      #results li {
+        margin: 0.5rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>商品検索</h2>
+    <input type="text" id="keyword" placeholder="商品名を入力" />
+    <button id="searchBtn">検索</button>
+
+    <ul id="results"></ul>
+
+    <script>
+      document
+        .getElementById("searchBtn")
+        .addEventListener("click", async () => {
+          const keyword = document.getElementById("keyword").value.trim();
+          if (!keyword) return alert("キーワードを入力してください。");
+
+          try {
+            const response = await fetch(
+              `/api/search?keyword=${encodeURIComponent(keyword)}`
+            );
+            const data = await response.json();
+
+            const resultsList = document.getElementById("results");
+            resultsList.innerHTML = "";
+
+            if (data.length === 0) {
+              resultsList.innerHTML = "<li>該当する商品はありません。</li>";
+            } else {
+              data.forEach((item) => {
+                const li = document.createElement("li");
+                li.textContent = `${item.name} - ¥${item.price}`;
+                resultsList.appendChild(li);
+              });
+            }
+          } catch (error) {
+            console.error("通信エラー:", error);
+            alert("検索に失敗しました。");
+          }
+        });
+    </script>
+  </body>
+</html>

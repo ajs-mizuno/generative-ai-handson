@@ -1,9 +1,19 @@
 
-from fastapi import FastAPI, Query, HTTPException
+from fastapi import FastAPI, Query, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from pydantic import BaseModel
 # import requests
 
 app = FastAPI()
+
+# 雛型
+templates = Jinja2Templates(directory="templates")
+
+# 静的ファイル展開
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
 # ルートエンドポイント
@@ -50,3 +60,40 @@ def read_item(item_id: int):
 #     url = f"https://api.weatherapi.com/v1/current.json?key=YOUR_KEY&q={city}"
 #     res = requests.get(url)
 #     return res.json()
+
+@app.get("/hello", response_class=HTMLResponse)
+async def hello(request: Request, name: str = "ゲスト"):
+    return templates.TemplateResponse("hello.html", {
+        "request": request, "name": name
+    })
+
+
+class ContactForm(BaseModel):
+    name: str
+    message: str
+
+
+@app.post("/api/contact")
+async def receive_contact(form: ContactForm):
+    print(f"名前: {form.name}, メッセージ: {form.message}")
+    return {"status": "ok"}
+
+
+class Item(BaseModel):
+    name: str
+    price: int
+
+
+# 仮のデータベース
+ITEMS_DB = [
+    {"name": "りんご", "price": 100},
+    {"name": "みかん", "price": 80},
+    {"name": "バナナ", "price": 120},
+    {"name": "りんごジュース", "price": 150}
+]
+
+
+@app.get("/api/search", response_model=list[Item])
+def search_items(keyword: str):
+    results = [item for item in ITEMS_DB if keyword in item["name"]]
+    return results

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>お問い合わせフォーム</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 2rem;
+      }
+      label,
+      input,
+      textarea {
+        display: block;
+        margin-bottom: 1rem;
+      }
+      button {
+        padding: 8px 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>お問い合わせフォーム</h2>
+    <form id="contactForm">
+      <label>名前: <input type="text" name="name" required /></label>
+      <label>メッセージ: <textarea name="message" required></textarea></label>
+      <button type="submit">送信</button>
+    </form>
+
+    <script>
+      document
+        .getElementById("contactForm")
+        .addEventListener("submit", async function (event) {
+          event.preventDefault(); // ページのリロードを防止
+
+          // 入力データを取得
+          const formData = new FormData(this);
+          const data = {
+            name: formData.get("name"),
+            message: formData.get("message"),
+          };
+
+          try {
+            const response = await fetch("/api/contact", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            if (response.ok) {
+              alert("送信が成功しました！");
+            } else {
+              alert("送信に失敗しました。");
+            }
+          } catch (error) {
+            console.error("通信エラー:", error);
+            alert("通信エラーが発生しました。");
+          }
+        });
+    </script>
+  </body>
+</html>
