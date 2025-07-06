@@ -1,0 +1,4 @@
+pystray
+watchdog
+python-dotenv
+pillow
