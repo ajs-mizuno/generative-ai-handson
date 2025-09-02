@@ -7,6 +7,14 @@ from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 # import requests
 
+# 〇プログラムの立ち上げ方
+# 仮想環境に入っていいない場合のみ
+# venv/script/activateを実行
+# サービスを立ち上げる
+# uvicorn main:app --reload
+# ※ポート番号をしていしない場合標準では8000を利用する
+# 指定したい場合は--port=XXXXをつける
+
 app = FastAPI()
 
 # 雛型
