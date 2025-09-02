@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>画面</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <!--ここが画面レイアウトと表示内容の定義-->
+    <!--h1で書くと見出し-->
+    <h1>リスト</h1>
+
+    <!--
+    ulはリスト表示でliはリストの項目
+    入力値をプログラムから読み取るのでID要素に値(items)を付与しておく
+    -->
+    <ul id="items">
+      <!--プログラム側の初期値で追加するためコメントアウト
+      <li>要素1</li>
+      <li>要素2</li>
+    --></ul>
+
+    <!--
+    inputは画面でユーザが入力するテキストボックスを配置
+    入力値をプログラムから読み取るのでID要素に値(keyword)を付与しておく
+    -->
+    <input id="keyword" value="" />
+
+    <!--
+    ユーザがクリックするボタンを配置する
+    onclickにプログラムの呼出(addItem)を記載する
+    -->
+    <button onclick="addItem()">追加</button>
+
+    <script>
+      /**
+       * <Script>タグの中にブラウザに表示するデータ加工処理を書く
+       */
+
+      //画面が表示されたときに実行される
+      window.onload = function () {
+        //初期データの定義
+        const items = ["要素1", "要素2"];
+
+        //追加するリスト要素を作成する
+        for (item of items) {
+          const li = document.createElement("li");
+
+          //追加するリスト要素にテキストボックスに入力した値を設定する
+          li.textContent = item;
+
+          //追加するリスト要素を画面に配置する
+          document
+            .getElementById(/*19行目のボタンのID*/ "items")
+            .appendChild(li);
+        }
+      };
+
+      /**入力した値をリストに追加する*/
+      function addItem() {
+        const input = document.getElementById(
+          "keyword" /*28行目のテキスト入力要素*/
+        );
+
+        //入力した値を取得する（取得時に余白を削除）
+        const value = input.value.trim();
+
+        //値が入っていればリストに追加（値が空の場合、追加しない）
+        if (value !== "") {
+          //追加するリスト要素を作成する
+          const li = document.createElement("li");
+
+          //追加するリスト要素にテキストボックスに入力した値を設定する
+          li.textContent = value;
+
+          //追加するリスト要素を画面に配置する
+          document
+            .getElementById(/*19行目のボタンのID*/ "items")
+            .appendChild(li);
+
+          // テキストボックスの値をクリア
+          input.value = "";
+        } else {
+          alert("値を入力してください");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body>
+    <!--ここが画面レイアウトと表示内容の定義-->
+    <!--h1で書くと見出し-->
+    <h1>チャットを投げる</h1>
+
+    <h2>質問</h2>
+    <textarea id="query"></textarea><!--<1>-->
+
+    <h2>回答</h2>
+    <pre id="answer"></pre>
+
+    <button onclick="postQuery()">投稿</button>
+
+    <script>
+      window.onload = function () {};
+
+      /**<Script>タグの中にブラウザに表示するデータ加工処理を書く/
+
+      /**入力した値をリストに追加する*/
+      function postQuery() {
+        const input = document.getElementById(
+          "query" /*28行目のテキスト入力要素*/
+        );
+
+        //入力した値を取得する（取得時に余白を削除）
+        const value = input.value.trim();
+
+        //値が入っていればリストに追加（値が空の場合、追加しない）
+        if (value !== "") {
+          //追加するリスト要素を画面に配置する
+          document.getElementById(/*19行目のボタンのID*/ "answer").innerText =
+            value;
+        } else {
+          alert("質問を入力してください");
+        }
+      }
+    </script>
+  </body>
+</html>
