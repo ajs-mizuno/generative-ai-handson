@@ -1,6 +1,6 @@
 
 from fastapi import FastAPI, Query, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -164,3 +164,33 @@ def search(keyword: str = Query(..., min_length=2)):
 #     url = f"https://api.weatherapi.com/v1/current.json?key=YOUR_KEY&q={city}"
 #     res = requests.get(url)
 #     return res.json()
+
+
+###############################################################################
+# RAGの実装例
+###############################################################################
+
+# AIエージェントのチャット画面の初期表示
+@app.get("/agent", response_class=HTMLResponse)
+async def get_chat(request: Request):
+    """
+    チャット画面を返す
+    """
+    return templates.TemplateResponse("agent.html", {"request": request, "title": "AIエージェント名"})
+
+
+# AIエージェントのチャット画面の初期表示
+@app.post("/query")
+async def post_query(payload: dict):
+    """
+    質問を受け取ってダミーの回答（Markdown形式）を返す
+    リクエスト JSON: { "query": "質問内容" }
+    レスポンス JSON: { "answer": "マークダウン形式のテキスト" }
+    """
+    query = payload.get("query", "").strip()
+    # --- ダミー処理 ---
+    if not query:
+        return JSONResponse({"answer": "質問してください"})
+    else:
+        answer_md = f"質問：[{query}]の回答"
+        return JSONResponse({"answer": answer_md})
