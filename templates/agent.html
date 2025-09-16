@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{{title}}</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+    <style>
+      /* リセット＆ベース */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        background-size: 15%;
+        color: #333;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      /* 全体コンテナ */
+      .chat-container {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 1200px;
+        height: 90vh;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      /* ヘッダー */
+      .chat-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: bold;
+      }
+      /* メッセージエリア */
+      #chat {
+        flex: 1;
+        padding: 1rem;
+        overflow-y: auto;
+        background: #f9fafb;
+      }
+      #chat p {
+        margin-bottom: 0.75rem;
+        line-height: 1.4;
+      }
+      .user {
+        text-align: right;
+      }
+      .user span {
+        display: inline-block;
+        background: #daf1ff;
+        padding: 0.5rem 0.75rem;
+        border-radius: 16px;
+      }
+      .bot {
+        text-align: left;
+      }
+      .bot span {
+        display: inline-block;
+        background: #e5e5e5;
+        padding: 0.5rem 0.75rem;
+        border-radius: 16px;
+      }
+      /* ステータス表示 */
+      #status {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+        color: #666;
+        background: #fafafa;
+        border-top: 1px solid #e0e0e0;
+      }
+      /* 入力エリア */
+      .chat-input {
+        display: flex;
+        padding: 1rem;
+        background: #fff;
+        border-top: 1px solid #e0e0e0;
+      }
+      .chat-input input {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ccc;
+        border-radius: 24px;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .chat-input input:focus {
+        border-color: #667eea;
+      }
+      .chat-input button {
+        margin-left: 0.75rem;
+        padding: 0 1.5rem;
+        background: #667eea;
+        color: #fff;
+        border: none;
+        border-radius: 24px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+      .chat-input button:hover:not(:disabled) {
+        background: #5a67d8;
+      }
+      .chat-input button:disabled,
+      .chat-input input:disabled {
+        background: #f0f0f0;
+        cursor: not-allowed;
+      }
+      ul,
+      ol {
+        padding-left: 2rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <div class="chat-header">{{title}}</div>
+      <div id="chat"></div>
+      <div id="status"></div>
+      <div class="chat-input">
+        <input
+          type="text"
+          id="input"
+          placeholder="質問を入力…"
+          autocomplete="off"
+        />
+        <button id="send">送信</button>
+      </div>
+    </div>
+
+    <script>
+      const chatDiv = document.getElementById("chat");
+      const statusDiv = document.getElementById("status");
+      const inputEl = document.getElementById("input");
+      const sendBtn = document.getElementById("send");
+
+      function appendMessage(who, textHtml) {
+        const p = document.createElement("p");
+        p.className = who;
+        const span = document.createElement("span");
+        span.innerHTML = textHtml;
+        p.appendChild(span);
+        chatDiv.appendChild(p);
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+      }
+
+      async function sendQuery() {
+        const query = inputEl.value.trim();
+        if (!query) return;
+
+        // ユーザ発言
+        appendMessage("user", DOMPurify.sanitize(query));
+
+        // 状態表示＆入力無効化
+        statusDiv.textContent = "回答中…";
+        inputEl.disabled = true;
+        sendBtn.disabled = true;
+
+        let data;
+        try {
+          const res = await fetch("/query", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+          data = await res.json();
+        } catch (err) {
+          appendMessage("bot", "サーバーエラーが発生しました。");
+          console.error(err);
+        }
+
+        if (data && data.answer) {
+          // Markdown→HTML→sanitize
+          const rawHtml = marked.parse(data.answer);
+          const cleanHtml = DOMPurify.sanitize(rawHtml);
+          appendMessage("bot", cleanHtml);
+        }
+
+        // 入力再有効化
+        statusDiv.textContent = "";
+        inputEl.disabled = false;
+        sendBtn.disabled = false;
+        inputEl.value = "";
+        inputEl.focus();
+      }
+
+      sendBtn.addEventListener("click", sendQuery);
+      inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !inputEl.disabled) sendQuery();
+      });
+    </script>
+  </body>
+</html>
