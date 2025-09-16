@@ -5,6 +5,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from pydantic import BaseModel
+
+from rag import query_db
+
 # import requests
 
 # 〇プログラムの立ち上げ方
@@ -192,5 +195,6 @@ async def post_query(payload: dict):
     if not query:
         return JSONResponse({"answer": "質問してください"})
     else:
-        answer_md = f"質問：[{query}]の回答"
+        # answer_md = f"質問：[{query}]の回答"
+        answer_md = query_db(query)
         return JSONResponse({"answer": answer_md})
